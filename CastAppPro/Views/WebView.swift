@@ -1,10 +1,34 @@
 import SwiftUI
 import WebKit
 
+class WebViewModel: ObservableObject {
+    @Published var canGoBack = false
+    @Published var canGoForward = false
+    @Published var urlString: String = "https://www.google.com"
+    var webView: WKWebView?
+    
+    func goBack() {
+        webView?.goBack()
+    }
+    func goForward() {
+        webView?.goForward()
+    }
+    func reload() {
+        webView?.reload()
+    }
+    func load(url: URL) {
+        webView?.load(URLRequest(url: url))
+    }
+}
+
 struct WebView: UIViewRepresentable {
     @Binding var url: URL
     @Binding var showCastModal: Bool
     @Binding var videoURL: String?
+    @ObservedObject var viewModel: WebViewModel
+    var darkMode: Bool
+    var autoDetectVideos: Bool
+    @Binding var clearWebViewDataTrigger: Bool
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -18,12 +42,46 @@ struct WebView: UIViewRepresentable {
         
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        viewModel.webView = webView
         return webView
     }
     
     func updateUIView(_ webView: WKWebView, context: Context) {
-        let request = URLRequest(url: url)
-        webView.load(request)
+        if webView.url != url {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
+        // Inject dark mode if needed
+        if darkMode {
+            let darkCSS = """
+                (function() {
+                    var style = document.getElementById('castablepro-dark');
+                    if (!style) {
+                        style = document.createElement('style');
+                        style.id = 'castablepro-dark';
+                        style.innerHTML = '* { background: #000 !important; color: #eee !important; border-color: #222 !important; } img, video { filter: brightness(0.8) !important; }';
+                        document.head.appendChild(style);
+                    }
+                })();
+            """
+            webView.evaluateJavaScript(darkCSS, completionHandler: nil)
+        } else {
+            let removeCSS = """
+                (function() {
+                    var style = document.getElementById('castablepro-dark');
+                    if (style) style.remove();
+                })();
+            """
+            webView.evaluateJavaScript(removeCSS, completionHandler: nil)
+        }
+        // Clear browsing data if triggered
+        if clearWebViewDataTrigger {
+            WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+                WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records) {
+                    print("Browsing data cleared!")
+                }
+            }
+        }
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
@@ -34,21 +92,42 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            let script = """
-                var videos = document.getElementsByTagName('video');
-                if (videos.length > 0) {
-                    for (var i = 0; i < videos.length; i++) {
-                        videos[i].addEventListener('play', function() {
-                            window.webkit.messageHandlers.videoDetected.postMessage(this.src);
-                        });
+            if parent.autoDetectVideos {
+                let script = """
+                    var videos = document.getElementsByTagName('video');
+                    if (videos.length > 0) {
+                        for (var i = 0; i < videos.length; i++) {
+                            videos[i].addEventListener('play', function() {
+                                window.webkit.messageHandlers.videoDetected.postMessage(this.src);
+                            });
+                        }
+                    }
+                """
+                webView.evaluateJavaScript(script) { _, error in
+                    if let error = error {
+                        print("Error injecting script: \(error)")
                     }
                 }
-            """
-            
-            webView.evaluateJavaScript(script) { _, error in
-                if let error = error {
-                    print("Error injecting script: \(error)")
-                }
+            }
+            DispatchQueue.main.async {
+                self.parent.viewModel.canGoBack = webView.canGoBack
+                self.parent.viewModel.canGoForward = webView.canGoForward
+                self.parent.viewModel.urlString = webView.url?.absoluteString ?? ""
+            }
+            // Re-inject dark mode if needed
+            if self.parent.darkMode {
+                let darkCSS = """
+                    (function() {
+                        var style = document.getElementById('castablepro-dark');
+                        if (!style) {
+                            style = document.createElement('style');
+                            style.id = 'castablepro-dark';
+                            style.innerHTML = '* { background: #000 !important; color: #eee !important; border-color: #222 !important; } img, video { filter: brightness(0.8) !important; }';
+                            document.head.appendChild(style);
+                        }
+                    })();
+                """
+                webView.evaluateJavaScript(darkCSS, completionHandler: nil)
             }
         }
         
