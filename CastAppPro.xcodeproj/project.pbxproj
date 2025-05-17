@@ -8,17 +8,31 @@
 
 /* Begin PBXBuildFile section */
 		F7778D5E2DD7B93A005BC985 /* CastAppProApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7778D5D2DD7B93A005BC985 /* CastAppProApp.swift */; };
-		F7778D602DD7B93A005BC985 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7778D5F2DD7B93A005BC985 /* ContentView.swift */; };
 		F7778D622DD7B93B005BC985 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7778D612DD7B93B005BC985 /* Assets.xcassets */; };
-		F7778D652DD7B93B005BC985 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7778D642DD7B93B005BC985 /* Preview Assets.xcassets */; };
+		F7A7B8C72DD8140F00A2F349 /* RemoteControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8B82DD8140E00A2F349 /* RemoteControlView.swift */; };
+		F7A7B8C82DD8140F00A2F349 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8B92DD8140E00A2F349 /* WebView.swift */; };
+		F7A7B8C92DD8140F00A2F349 /* CastModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8BA2DD8140E00A2F349 /* CastModalView.swift */; };
+		F7A7B8CA2DD8140F00A2F349 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7A7B8BC2DD8140E00A2F349 /* Preview Assets.xcassets */; };
+		F7A7B8CB2DD8140F00A2F349 /* RokuDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8BE2DD8140E00A2F349 /* RokuDevice.swift */; };
+		F7A7B8CC2DD8140F00A2F349 /* SSDPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */; };
+		F7A7B8D02DD8140F00A2F349 /* RokuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8C42DD8140E00A2F349 /* RokuController.swift */; };
+		F7A7B8D32DD814BF00A2F349 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8D22DD814BF00A2F349 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F7778D5A2DD7B93A005BC985 /* CastAppPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CastAppPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7778D5D2DD7B93A005BC985 /* CastAppProApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastAppProApp.swift; sourceTree = "<group>"; };
-		F7778D5F2DD7B93A005BC985 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F7778D612DD7B93B005BC985 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7778D642DD7B93B005BC985 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F7A7B8B62DD8140E00A2F349 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F7A7B8B82DD8140E00A2F349 /* RemoteControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteControlView.swift; sourceTree = "<group>"; };
+		F7A7B8B92DD8140E00A2F349 /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		F7A7B8BA2DD8140E00A2F349 /* CastModalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastModalView.swift; sourceTree = "<group>"; };
+		F7A7B8BC2DD8140E00A2F349 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F7A7B8BE2DD8140E00A2F349 /* RokuDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RokuDevice.swift; sourceTree = "<group>"; };
+		F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSDPService.swift; sourceTree = "<group>"; };
+		F7A7B8C42DD8140E00A2F349 /* RokuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RokuController.swift; sourceTree = "<group>"; };
+		F7A7B8D22DD814BF00A2F349 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,8 +65,12 @@
 		F7778D5C2DD7B93A005BC985 /* CastAppPro */ = {
 			isa = PBXGroup;
 			children = (
+				F7A7B8B62DD8140E00A2F349 /* Assets.xcassets */,
+				F7A7B8C32DD8140E00A2F349 /* Controllers */,
+				F7A7B8BD2DD8140E00A2F349 /* Models */,
+				F7A7B8BB2DD8140E00A2F349 /* Preview Content */,
+				F7A7B8B72DD8140E00A2F349 /* Views */,
 				F7778D5D2DD7B93A005BC985 /* CastAppProApp.swift */,
-				F7778D5F2DD7B93A005BC985 /* ContentView.swift */,
 				F7778D612DD7B93B005BC985 /* Assets.xcassets */,
 				F7778D632DD7B93B005BC985 /* Preview Content */,
 			);
@@ -65,6 +83,42 @@
 				F7778D642DD7B93B005BC985 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F7A7B8B72DD8140E00A2F349 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F7A7B8D22DD814BF00A2F349 /* ContentView.swift */,
+				F7A7B8B82DD8140E00A2F349 /* RemoteControlView.swift */,
+				F7A7B8B92DD8140E00A2F349 /* WebView.swift */,
+				F7A7B8BA2DD8140E00A2F349 /* CastModalView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F7A7B8BB2DD8140E00A2F349 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F7A7B8BC2DD8140E00A2F349 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F7A7B8BD2DD8140E00A2F349 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F7A7B8BE2DD8140E00A2F349 /* RokuDevice.swift */,
+				F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F7A7B8C32DD8140E00A2F349 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F7A7B8C42DD8140E00A2F349 /* RokuController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,7 +179,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7778D652DD7B93B005BC985 /* Preview Assets.xcassets in Resources */,
+				F7A7B8CA2DD8140F00A2F349 /* Preview Assets.xcassets in Resources */,
 				F7778D622DD7B93B005BC985 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +191,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7778D602DD7B93A005BC985 /* ContentView.swift in Sources */,
+				F7A7B8CB2DD8140F00A2F349 /* RokuDevice.swift in Sources */,
+				F7A7B8CC2DD8140F00A2F349 /* SSDPService.swift in Sources */,
+				F7A7B8D32DD814BF00A2F349 /* ContentView.swift in Sources */,
+				F7A7B8C82DD8140F00A2F349 /* WebView.swift in Sources */,
+				F7A7B8D02DD8140F00A2F349 /* RokuController.swift in Sources */,
+				F7A7B8C92DD8140F00A2F349 /* CastModalView.swift in Sources */,
+				F7A7B8C72DD8140F00A2F349 /* RemoteControlView.swift in Sources */,
 				F7778D5E2DD7B93A005BC985 /* CastAppProApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
