@@ -1,5 +1,6 @@
 import SwiftUI
 import WebKit
+import UIKit // For haptic feedback
 
 // MARK: - StartPageView
 struct StartPageView: View {
@@ -12,107 +13,116 @@ struct StartPageView: View {
     let userName = "Zablon"
     let accentBlue = Color(red: 0.18, green: 0.38, blue: 0.95)
     let bgColor = Color(.white)
+    @ObservedObject var watchlistManager: WatchlistManager
     
     var body: some View {
-        ZStack {
-            bgColor.ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Greeting, Notification, and Search
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Good morning, \(userName)")
-                                .font(.system(size: 22, weight: .bold, design: .rounded))
+        NavigationView {
+            ZStack {
+                bgColor.ignoresSafeArea()
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Greeting, Notification, and Search
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Good morning, \(userName)")
+                                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                                    .foregroundColor(.primary)
+                                Text("Ready to stream?")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            ZStack(alignment: .topTrailing) {
+                                Button(action: {}) {
+                                    Image(systemName: "bell")
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundColor(accentBlue)
+                                        .padding(8)
+                                        .background(Color.white)
+                                        .clipShape(Circle())
+                                        .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
+                                }
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 16, height: 16)
+                                    .overlay(Text("3").font(.caption2).foregroundColor(.white))
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 24)
+                        // Search Bar
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.gray)
+                            TextField("Search...", text: $searchText)
+                                .focused($searchFocused)
                                 .foregroundColor(.primary)
-                            Text("Ready to stream?")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        ZStack(alignment: .topTrailing) {
-                            Button(action: {}) {
-                                Image(systemName: "bell")
-                                    .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(accentBlue)
-                                    .padding(8)
-                                    .background(Color.white)
-                                    .clipShape(Circle())
-                                    .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
-                            }
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 16, height: 16)
-                                .overlay(Text("3").font(.caption2).foregroundColor(.white))
-                                .offset(x: 8, y: -8)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 24)
-                    // Search Bar
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                        TextField("Search...", text: $searchText)
-                            .focused($searchFocused)
-                            .foregroundColor(.primary)
-                            .onChange(of: searchText) { newValue in
-                                Task { await movieService.searchMovies(query: newValue) }
-                            }
-                        if !searchText.isEmpty {
-                            Button(action: { searchText = "" }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.gray)
+                                .onChange(of: searchText) { newValue in
+                                    Task { await movieService.searchMovies(query: newValue) }
+                                }
+                            if !searchText.isEmpty {
+                                Button(action: { searchText = "" }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.gray)
+                                }
                             }
                         }
-                    }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 18)
-                    .background(Color.white)
-                    .cornerRadius(18)
-                    .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                    // Quick Actions
-                    HStack(spacing: 24) {
-                        QuickActionButton(icon: "flame.fill", label: "Popular", color: accentBlue)
-                        QuickActionButton(icon: "star.fill", label: "Top Rated", color: .yellow)
-                        QuickActionButton(icon: "film", label: "Genres", color: .purple)
-                        QuickActionButton(icon: "heart.fill", label: "My List", color: .pink)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 18)
-                    // Promo Card
-                    PromoCard(accentBlue: accentBlue)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 18)
+                        .background(Color.white)
+                        .cornerRadius(18)
+                        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                        // Quick Actions
+                        HStack(spacing: 24) {
+                            QuickActionButton(icon: "flame.fill", label: "Popular", color: accentBlue)
+                            QuickActionButton(icon: "star.fill", label: "Top Rated", color: .yellow)
+                            QuickActionButton(icon: "film", label: "Genres", color: .purple)
+                            QuickActionButton(icon: "heart.fill", label: "My List", color: .pink)
+                        }
                         .padding(.horizontal)
                         .padding(.top, 18)
-                    // Trending Section (rest of your content follows...)
-                    SectionHeader(title: "Trending", accent: accentBlue)
-                    HorizontalBookCarousel(movies: Array(movieService.popularMovies.prefix(8)), accentBlue: accentBlue) { movie in
-                        selectedMovie = movie
-                    }
-                    // Continue Watching
-                    if let movie = movieService.popularMovies.first {
-                        Text("Continue Watching")
-                            .font(.title3).bold()
-                            .foregroundColor(.primary)
+                        // Promo Card
+                        PromoCard(accentBlue: accentBlue)
                             .padding(.horizontal)
-                            .padding(.top, 12)
-                        ContinueWatchingCard(movie: movie, accentBlue: accentBlue) { _ in selectedMovie = movie }
-                            .padding(.horizontal)
-                            .padding(.bottom, 8)
+                            .padding(.top, 18)
+                        // Trending Section (rest of your content follows...)
+                        SectionHeader(title: "Trending", accent: accentBlue)
+                       
+                            HorizontalBookCarousel(
+                                movies: Array(movieService.popularMovies.prefix(8)),
+                                accentBlue: accentBlue,
+                                watchlistManager: watchlistManager,
+                                movieService: movieService
+                            )
+                        
+                        // Continue Watching
+                        if let movie = movieService.popularMovies.first {
+                            Text("Continue Watching")
+                                .font(.title3).bold()
+                                .foregroundColor(.primary)
+                                .padding(.horizontal)
+                                .padding(.top, 12)
+                            ContinueWatchingCard(movie: movie, accentBlue: accentBlue, watchlistManager: watchlistManager)
+                                .padding(.horizontal)
+                                .padding(.bottom, 8)
+                        }
+                        // New Arrival
+                        SectionHeader(title: "New Arrival", accent: accentBlue)
+                        HorizontalBookCarousel(
+                            movies: Array(movieService.trendingMovies.prefix(8)),
+                            accentBlue: accentBlue,
+                            watchlistManager: watchlistManager,
+                            movieService: movieService
+                        )
+                        Spacer(minLength: 60)
                     }
-                    // New Arrival
-                    SectionHeader(title: "New Arrival", accent: accentBlue)
-                    HorizontalBookCarousel(movies: Array(movieService.trendingMovies.prefix(8)), accentBlue: accentBlue) { movie in
-                        selectedMovie = movie
+                   
+                    .task {
+                        await movieService.fetchMovies()
                     }
-                    Spacer(minLength: 60)
-                }
-                .sheet(item: $selectedMovie) { movie in
-                    MovieDetailSheet(movie: movie)
-                }
-                .task {
-                    await movieService.fetchMovies()
                 }
             }
         }
@@ -145,12 +155,17 @@ struct SectionHeader: View {
 struct HorizontalBookCarousel: View {
     let movies: [Movie]
     let accentBlue: Color
-    var onTap: (Movie) -> Void
+    @ObservedObject var watchlistManager: WatchlistManager
+    let movieService: MovieService
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
                 ForEach(movies) { movie in
-                    BookStyleMovieCard(movie: movie, accentBlue: accentBlue, onTap: onTap)
+                    NavigationLink(
+                        destination: MovieDetailSheet(movie: movie, watchlistManager: watchlistManager, movieService: movieService)
+                    ) {
+                        BookStyleMovieCard(movie: movie, accentBlue: accentBlue, watchlistManager: watchlistManager)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -159,50 +174,90 @@ struct HorizontalBookCarousel: View {
     }
 }
 
+// MARK: - WatchlistMovie
+struct WatchlistMovie: Codable, Identifiable, Equatable {
+    let id: Int
+    let title: String
+    let description: String
+}
+
+// MARK: - WatchlistManager
+class WatchlistManager: ObservableObject {
+    @Published private(set) var watchlist: [WatchlistMovie] = []
+    private let key = "watchlist"
+    init() { load() }
+    func add(_ movie: WatchlistMovie) {
+        if !watchlist.contains(where: { $0.id == movie.id }) {
+            watchlist.append(movie)
+            save()
+        }
+    }
+    func remove(_ id: Int) {
+        watchlist.removeAll { $0.id == id }
+        save()
+    }
+    func toggle(_ movie: WatchlistMovie) {
+        if watchlist.contains(where: { $0.id == movie.id }) {
+            remove(movie.id)
+        } else {
+            add(movie)
+        }
+    }
+    func isInWatchlist(_ id: Int) -> Bool {
+        watchlist.contains(where: { $0.id == id })
+    }
+    private func load() {
+        if let data = UserDefaults.standard.data(forKey: key),
+           let items = try? JSONDecoder().decode([WatchlistMovie].self, from: data) {
+            watchlist = items
+        }
+    }
+    private func save() {
+        if let data = try? JSONEncoder().encode(watchlist) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+}
+
 // MARK: - Book Style Movie Card
 struct BookStyleMovieCard: View {
     let movie: Movie
     let accentBlue: Color
-    var onTap: (Movie) -> Void
+    @ObservedObject var watchlistManager: WatchlistManager
+    var isInWatchlist: Bool { watchlistManager.isInWatchlist(movie.id) }
     var body: some View {
-        Button(action: { onTap(movie) }) {
-            VStack(alignment: .leading, spacing: 8) {
-                ZStack(alignment: .topTrailing) {
-                    if let url = movie.posterURL {
-                        AsyncImage(url: url) { image in
-                            image.resizable().scaledToFill()
-                        } placeholder: {
-                            Color.gray
-                        }
-                        .frame(width: 130, height: 190)
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                        .shadow(color: accentBlue.opacity(0.10), radius: 8, x: 0, y: 4)
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topTrailing) {
+                if let url = movie.posterURL {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Color.gray
                     }
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(accentBlue)
-                            .font(.caption2)
-                        Text(String(format: "%.1f", movie.voteAverage))
-                            .foregroundColor(.white)
-                            .font(.caption2)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(accentBlue)
-                            .cornerRadius(8)
-                    }
-                    .padding(8)
+                    .frame(width: 130, height: 190)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .shadow(color: accentBlue.opacity(0.10), radius: 8, x: 0, y: 4)
                 }
-                Text(movie.title)
-                    .font(.subheadline).bold()
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                Text("\(movie.year)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                Button(action: {
+                    let entry = WatchlistMovie(id: movie.id, title: movie.title, description: movie.overview)
+                    watchlistManager.toggle(entry)
+                }) {
+                    Image(systemName: isInWatchlist ? "bookmark.fill" : "bookmark")
+                        .foregroundColor(isInWatchlist ? .accentColor : .gray)
+                        .padding(6)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .frame(width: 130)
+            Text(movie.title)
+                .font(.subheadline).bold()
+                .foregroundColor(.primary)
+                .lineLimit(1)
+            Text("\(movie.year)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .lineLimit(1)
         }
+        .frame(width: 130)
     }
 }
 
@@ -210,9 +265,10 @@ struct BookStyleMovieCard: View {
 struct ContinueWatchingCard: View {
     let movie: Movie
     let accentBlue: Color
-    var onTap: (Movie) -> Void
+    @ObservedObject var watchlistManager: WatchlistManager
+    var isInWatchlist: Bool { watchlistManager.isInWatchlist(movie.id) }
     var body: some View {
-        Button(action: { onTap(movie) }) {
+        Button(action: { }) {
             HStack(alignment: .top, spacing: 16) {
                 if let url = movie.posterURL {
                     AsyncImage(url: url) { image in
@@ -228,7 +284,7 @@ struct ContinueWatchingCard: View {
                         .font(.headline)
                         .foregroundColor(.primary)
                         .lineLimit(1)
-                    Text(movie.overview) // Placeholder for progress
+                    Text(movie.overview)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.leading)
@@ -236,7 +292,7 @@ struct ContinueWatchingCard: View {
                     ProgressView(value: 0.7)
                         .accentColor(accentBlue)
                         .frame(width: 120)
-                    Button(action: { onTap(movie) }) {
+                    Button(action: { }) {
                         Text("Continue watching")
                             .font(.subheadline).bold()
                             .foregroundColor(.white)
@@ -246,9 +302,17 @@ struct ContinueWatchingCard: View {
                             .cornerRadius(10)
                     }
                     .padding(.top, 2)
-                   
                 }
                 Spacer()
+                Button(action: {
+                    let entry = WatchlistMovie(id: movie.id, title: movie.title, description: movie.overview)
+                    watchlistManager.toggle(entry)
+                }) {
+                    Image(systemName: isInWatchlist ? "bookmark.fill" : "bookmark")
+                        .foregroundColor(isInWatchlist ? .accentColor : .gray)
+                        .padding(6)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
             .padding(16)
             .background(Color.white)
@@ -340,12 +404,11 @@ struct HuluSectionHeader: View {
 struct HuluHorizontalCarousel: View {
     let movies: [Movie]
     let huluGreen: Color
-    var onTap: (Movie) -> Void
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 18) {
                 ForEach(movies) { movie in
-                    HuluMovieCard(movie: movie, huluGreen: huluGreen) { _ in onTap(movie) }
+                    HuluMovieCard(movie: movie, huluGreen: huluGreen)
                 }
             }
             .padding(.horizontal)
@@ -357,9 +420,8 @@ struct HuluHorizontalCarousel: View {
 struct HuluMovieCard: View {
     let movie: Movie
     let huluGreen: Color
-    var onTap: (Movie) -> Void
     var body: some View {
-        Button(action: { onTap(movie) }) {
+        Button(action: {}) {
             VStack(alignment: .leading, spacing: 8) {
                 ZStack(alignment: .bottomTrailing) {
                     if let url = movie.posterURL {
@@ -503,7 +565,6 @@ struct HeroSectionView: View {
 // MARK: - Continue Watching Row
 struct ContinueWatchingRow: View {
     let movies: [Movie]
-    var onTap: (Movie) -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Continue Watching")
@@ -515,7 +576,7 @@ struct ContinueWatchingRow: View {
                     ForEach(movies) { movie in
                         VStack(spacing: 8) {
                             ZStack(alignment: .bottomTrailing) {
-                                Button(action: { onTap(movie) }) {
+                                Button(action: {}) {
                                     if let url = movie.posterURL {
                                         AsyncImage(url: url) { image in
                                             image.resizable().scaledToFill()
@@ -550,17 +611,15 @@ struct ContinueWatchingRow: View {
 // MARK: - For You Carousel
 struct ForYouCarousel: View {
     let movies: [Movie]
-    var onTap: (Movie) -> Void
-    @State private var currentIndex: Int = 0
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("For You")
                 .font(.title3).bold()
                 .foregroundColor(.white)
                 .padding(.horizontal)
-            TabView(selection: $currentIndex) {
+            TabView(selection: .constant(0)) {
                 ForEach(Array(movies.enumerated()), id: \ .offset) { idx, movie in
-                    Button(action: { onTap(movie) }) {
+                    Button(action: {}) {
                         ZStack(alignment: .bottomLeading) {
                             if let url = movie.backdropURL ?? movie.posterURL {
                                 AsyncImage(url: url) { image in
@@ -719,10 +778,8 @@ struct FeaturedMovieCard: View {
 
 struct MovieThumbCard: View {
     let movie: Movie
-    var onTap: () -> Void
-    
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {}) {
             VStack(alignment: .leading, spacing: 6) {
                 ZStack(alignment: .bottomTrailing) {
                     if let posterURL = movie.posterURL {
@@ -766,6 +823,13 @@ struct MovieDetailSheet: View {
     let accentBlue = Color(red: 0.18, green: 0.38, blue: 0.95)
     @State private var showFullStory = false
     @State private var isFavorite = false
+    @ObservedObject var watchlistManager: WatchlistManager
+    var isInWatchlist: Bool { watchlistManager.isInWatchlist(movie.id) }
+    @State private var trailerURL: URL? = nil
+    @State private var showTrailerSection = false
+    @State private var isLoadingTrailer = false
+    @State private var trailerError: String? = nil
+    let movieService: MovieService
     // Mock cast data
     let cast: [CastMember] = [
         .init(name: "Hirokazu Kor.", role: "Director", image: "person.crop.circle"),
@@ -775,142 +839,209 @@ struct MovieDetailSheet: View {
         .init(name: "Jyo Kairi", role: "Shota Shibata", image: "person.crop.square")
     ]
     var body: some View {
-        VStack(spacing: 0) {
-            // Hero Section
-            ZStack(alignment: .top) {
-                if let backdropURL = movie.backdropURL ?? movie.posterURL {
-                    AsyncImage(url: backdropURL) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Color.gray
-                    }
-                    .frame(height: 220)
-                    .clipped()
-                    .overlay(
-                        LinearGradient(gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.95)]), startPoint: .top, endPoint: .bottom)
-                    )
-                }
-                VStack {
-                    Spacer()
-                    Button(action: {}) {
-                        ZStack {
-                            Circle().fill(accentRed).frame(width: 56, height: 56)
-                            Image(systemName: "play.fill")
-                                .foregroundColor(.white)
-                                .font(.system(size: 28, weight: .bold))
+        ScrollView {
+            VStack(spacing: 0) {
+                // Hero Section
+                ZStack(alignment: .top) {
+                    if let backdropURL = movie.backdropURL ?? movie.posterURL {
+                        AsyncImage(url: backdropURL) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Color.gray
                         }
+                        .frame(height: 220)
+                        .clipped()
+                        .overlay(
+                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.55),Color.white]), startPoint: .top, endPoint: .bottom)
+                        )
                     }
-                    .shadow(radius: 8)
+                 
                 }
                 .frame(height: 220)
-            }
-            .frame(height: 220)
-            // Movie Info Card
-            HStack(alignment: .top, spacing: 16) {
-                if let posterURL = movie.posterURL {
-                    AsyncImage(url: posterURL) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Color.gray
+                // Movie Info Card
+                HStack(alignment: .top, spacing: 16) {
+                    if let posterURL = movie.posterURL {
+                        AsyncImage(url: posterURL) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Color.gray
+                        }
+                        .frame(width: 80, height: 110)
+                        .cornerRadius(12)
+                        .shadow(color: accentBlue.opacity(0.10), radius: 8, x: 0, y: 4)
                     }
-                    .frame(width: 80, height: 110)
-                    .cornerRadius(12)
-                    .shadow(color: accentBlue.opacity(0.10), radius: 8, x: 0, y: 4)
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(movie.title)
-                        .font(.headline).bold()
-                        .foregroundColor(.primary)
-                        .lineLimit(2)
-                    Text("2h 1min | Crime, Drama")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    HStack(spacing: 6) {
-                        ForEach(0..<5) { i in
-                            Image(systemName: i < Int(movie.voteAverage/2) ? "star.fill" : "star")
-                                .foregroundColor(accentYellow)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(movie.title)
+                            .font(.headline).bold()
+                            .foregroundColor(.primary)
+                            .lineLimit(2)
+                        Text("2h 1min | Crime, Drama")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        HStack(spacing: 6) {
+                            ForEach(0..<5) { i in
+                                Image(systemName: i < Int(movie.voteAverage/2) ? "star.fill" : "star")
+                                    .foregroundColor(accentYellow)
+                                    .font(.caption)
+                            }
+                            Text(String(format: "%.1f", movie.voteAverage))
+                                .font(.caption).bold()
+                                .foregroundColor(.primary)
+                        }
+                        Button(action: { isFavorite.toggle() }) {
+                            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                                .foregroundColor(isFavorite ? accentRed : .gray)
+                                .font(.title2)
+                        }
+                        Button(action: {
+                            let entry = WatchlistMovie(id: movie.id, title: movie.title, description: movie.overview)
+                            watchlistManager.toggle(entry)
+                        }) {
+                            Image(systemName: isInWatchlist ? "bookmark.fill" : "bookmark")
+                                .foregroundColor(isInWatchlist ? .accentColor : .gray)
+                                .font(.title2)
+                        }
+                        // Watch Trailer Button
+                        Button(action: {
+                            Task {
+                                isLoadingTrailer = true
+                                trailerError = nil
+                                do {
+                                    if let key = try await movieService.fetchMovieTrailer(movieId: movie.id) {
+                                        trailerURL = URL(string: "https://www.youtube.com/watch?v=\(key)")
+                                        showTrailerSection = true
+                                    } else {
+                                        trailerError = "No trailer found."
+                                    }
+                                } catch {
+                                    trailerError = "Failed to load trailer."
+                                }
+                                isLoadingTrailer = false
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "play.circle.fill")
+                                    .font(.title2)
+                                Text("Watch Trailer")
+                                    .font(.headline)
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(8)
+                            .background(accentBlue)
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
+                        .disabled(isLoadingTrailer)
+                        if isLoadingTrailer {
+                            ProgressView().padding(.top, 4)
+                        }
+                        if let trailerError = trailerError {
+                            Text(trailerError)
+                                .foregroundColor(.red)
                                 .font(.caption)
                         }
-                        Text(String(format: "%.1f", movie.voteAverage))
-                            .font(.caption).bold()
+                    }
+                    Spacer()
+                 
+                }
+                .padding(.horizontal)
+                .padding(.top, -32)
+                .padding(.bottom, 8)
+                // Trailer Section (inserted before Details)
+                if showTrailerSection, let trailerURL = trailerURL, let videoKey = trailerURL.query?.split(separator: "=").last.map(String.init) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Trailer")
+                            .font(.headline).bold()
                             .foregroundColor(.primary)
+                        YouTubePlayerView(videoKey: videoKey)
+                            .frame(height: 220)
+                            .cornerRadius(12)
+                            .padding(.vertical, 4)
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
                 }
-                Spacer()
-                Button(action: { isFavorite.toggle() }) {
-                    Image(systemName: isFavorite ? "heart.fill" : "heart")
-                        .foregroundColor(isFavorite ? accentRed : .gray)
-                        .font(.title2)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, -32)
-            .padding(.bottom, 8)
-            // Storyline
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Storyline")
-                    .font(.headline).bold()
-                    .foregroundColor(.primary)
-                Text(movie.overview)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .lineLimit(showFullStory ? nil : 2)
-                if !showFullStory {
-                    Button(action: { showFullStory = true }) {
-                        Text("Read More")
-                            .font(.caption).bold()
-                            .foregroundColor(accentBlue)
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            // Cast Carousel
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Cast")
+                // Details Section
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Details")
                         .font(.headline).bold()
                         .foregroundColor(.primary)
-                    Spacer()
-                    Button(action: {}) {
-                        Text("See all")
-                            .font(.caption).bold()
-                            .foregroundColor(accentBlue)
+                    HStack(spacing: 18) {
+                        InfoCard(icon: "calendar", label: "Year", title: movie.year)
+                        InfoCard(icon: "clock", label: "Release Date", title: movie.releaseDate)
+                        InfoCard(icon: "number", label: "TMDB ID", title: String(movie.id))
+                        Spacer()
                     }
                 }
                 .padding(.horizontal)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 18) {
-                        ForEach(cast) { member in
-                            VStack(spacing: 6) {
-                                Image(systemName: member.image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 54, height: 54)
-                                    .clipShape(Circle())
-                                    .background(Circle().fill(Color(.systemGray6)))
-                                Text(member.name)
-                                    .font(.caption).bold()
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1)
-                                Text(member.role)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                            }
-                            .frame(width: 70)
+                .padding(.bottom, 8)
+                // Storyline
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Storyline")
+                        .font(.headline).bold()
+                        .foregroundColor(.primary)
+                    Text(movie.overview)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .lineLimit(showFullStory ? nil : 2)
+                    if !showFullStory {
+                        Button(action: { showFullStory = true }) {
+                            Text("Read More")
+                                .font(.caption).bold()
+                                .foregroundColor(accentBlue)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                // Cast Carousel
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Cast")
+                            .font(.headline).bold()
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Button(action: {}) {
+                            Text("See all")
+                                .font(.caption).bold()
+                                .foregroundColor(accentBlue)
                         }
                     }
                     .padding(.horizontal)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 18) {
+                            ForEach(cast) { member in
+                                VStack(spacing: 6) {
+                                    Image(systemName: member.image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 54, height: 54)
+                                        .clipShape(Circle())
+                                        .background(Circle().fill(Color(.systemGray6)))
+                                    Text(member.name)
+                                        .font(.caption).bold()
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+                                    Text(member.role)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                }
+                                .frame(width: 70)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
                 }
+                .padding(.top, 8)
+                .padding(.bottom, 18)
+                Spacer()
             }
-            .padding(.top, 8)
-            .padding(.bottom, 18)
-            Spacer()
-        }
-        .background(Color.white)
-        .cornerRadius(24)
-        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+            .background(Color("dynamic"))
+        }.toolbarBackground(Color("dynamic"))
+            .navigationBarTitle(movie.title)
+        
     }
 }
 
@@ -928,23 +1059,23 @@ struct InfoCard: View {
     let label: String
     let title: String
     var body: some View {
-        VStack(spacing: 6) {
-            HStack(spacing: 4) {
+       
+            HStack(alignment: .center, spacing: 4) {
                 Image(systemName: icon)
-                    .foregroundColor(Color.yellow)
-                    .font(.caption)
-                Text(label)
-                    .font(.subheadline).bold()
+                    .foregroundColor(Color.purple)
+                    .font(.title)
+                VStack(alignment: .leading) {
+                    Text(label)
+                        .font(.subheadline).bold()
                     .foregroundColor(.primary)
+                    Text(title)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(width: 80, height: 54)
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .padding(.horizontal,10)
+        
+        
     }
 }
 
@@ -992,14 +1123,17 @@ struct ContentView: View {
     @State private var clearWebViewDataTrigger = false
     @State private var startPageSearch = ""
     @AppStorage("selectedTab") private var selectedTab: Int = 0
+    @StateObject private var watchlistManager = WatchlistManager()
 
     var body: some View {
         ZStack {
             (darkMode ? Color.black : Color.white).ignoresSafeArea(edges: .top)
             Group {
                 if selectedTab == 0 {
-                    StartPageView()
+                    StartPageView(watchlistManager: watchlistManager)
                 } else if selectedTab == 1 {
+                    WatchlistView(watchlistManager: watchlistManager)
+                } else if selectedTab == 2 {
                     BrowserTabView(
                         url: $url,
                         showCastModal: $showCastModal,
@@ -1014,7 +1148,7 @@ struct ContentView: View {
                         homePage: $homePage,
                         lastVisitedURL: $lastVisitedURL
                     )
-                } else if selectedTab == 2 {
+                } else if selectedTab == 3 {
                     SettingsView(
                         darkMode: $darkMode,
                         homePage: $homePage,
@@ -1222,7 +1356,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView()
-            StartPageView()
+            StartPageView(watchlistManager: WatchlistManager())
         }
     }
 }
@@ -1295,40 +1429,87 @@ struct CustomTabBar: View {
     @State private var showCastDevices = false
     @ObservedObject var rokuController: RokuController
     
+    let tabIcons = [
+        (icon: "square.grid.2x2.fill", tag: 0),
+        (icon: "bookmark", tag: 1),
+        (icon: "sparkles.tv", tag: 99),
+        (icon: "magnifyingglass", tag: 2),
+        (icon: "person", tag: 3)
+    ]
+    
     var body: some View {
-        HStack(spacing: 44) {
-            Button(action: { selectedTab = 0 }) {
-                Image(systemName: "square.grid.2x2.fill")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(selectedTab == 0 ? Color.red : Color.white)
-            }
-            Button(action: { selectedTab = 1 }) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(selectedTab == 1 ? Color.white : Color.gray)
-            }
-            Button(action: { showCastDevices = true }) {
-                Image(systemName: "tv")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(rokuController.connectedDevice != nil ? Color.green : Color.white)
-            }
-            Button(action: { selectedTab = 2 }) {
-                Image(systemName: "person")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(selectedTab == 2 ? Color.white : Color.gray)
+        HStack(spacing: 0) {
+            ForEach(tabIcons, id: \ .tag) { tab in
+                if tab.tag == 99 {
+                    // Cast button
+                    Button(action: { showCastDevices = true }) {
+                        ZStack {
+                            Image(systemName: "sparkles.tv")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(rokuController.connectedDevice != nil ? Color.green : (selectedTab == 99 ? Color.accentColor : Color("invert")))
+                                .frame(maxWidth: .infinity)
+                            if rokuController.connectedDevice != nil {
+                                Circle()
+                                    .fill(Color.green)
+                                    .frame(width: 10, height: 10)
+                                    .offset(x: 14, y: -14)
+                            }
+                        }
+                        .frame(height: 44)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                } else {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                            selectedTab = tab.tag
+                        }
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
+                    }) {
+                        VStack(spacing: 2) {
+                            Image(systemName: tab.icon)
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(selectedTab == tab.tag ? Color.accentColor : Color("invert"))
+                                .frame(maxWidth: .infinity)
+                            if selectedTab == tab.tag {
+                                Capsule()
+                                    .fill(Color.accentColor)
+                                    .frame(width: 24, height: 3)
+                                    .padding(.top, 2)
+                                    .transition(.scale)
+                            } else {
+                                Capsule()
+                                    .fill(Color.clear)
+                                    .frame(width: 24, height: 3)
+                                    .padding(.top, 2)
+                            }
+                        }
+                        .frame(height: 44)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
             }
         }
-        .padding(.vertical, 18)
-        .padding(.horizontal, 32)
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+        .padding(.bottom, safeAreaBottomInset() - 40)
         .background(
-            Capsule()
-                .fill(Color.black)
+            Color("dynamic")
+                .edgesIgnoringSafeArea(.bottom)
         )
-        .shadow(color: Color.black.opacity(0.18), radius: 18, x: 0, y: 8)
-        .padding(.bottom, 18)
+        .overlay(
+            Rectangle()
+                .fill(Color.black.opacity(0.08))
+                .frame(height: 0.5)
+                .offset(y: -0.5), alignment: .top
+        )
         .sheet(isPresented: $showCastDevices) {
             CastDevicesView(rokuController: rokuController)
         }
+    }
+    
+    private func safeAreaBottomInset() -> CGFloat {
+        UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0
     }
 }
 
@@ -1754,6 +1935,83 @@ struct BrowserTabView: View {
         .padding(.horizontal, 12)
         .padding(.bottom,5)
         .animation(.easeInOut(duration: 0.18), value: searchFocused)
+    }
+}
+
+struct WatchlistView: View {
+    @ObservedObject var watchlistManager: WatchlistManager
+    var body: some View {
+        ZStack {
+            Color("dynamic").ignoresSafeArea()
+            if watchlistManager.watchlist.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "bookmark")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.accentColor)
+                    Text("Your Watchlist is Empty")
+                        .font(.title2).bold()
+                        .foregroundColor(.primary)
+                    Text("Add movies to your watchlist to see them here.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        Text("My Watchlist")
+                            .font(.largeTitle).bold()
+                            .padding(.horizontal)
+                            .padding(.top, 18)
+                        ForEach(watchlistManager.watchlist) { movie in
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(movie.title)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text(movie.description)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Button(action: {
+                                    watchlistManager.remove(movie.id)
+                                }) {
+                                    Image(systemName: "trash")
+                                        .foregroundColor(.red)
+                                        .padding(8)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Add this struct at the bottom of the file
+struct YouTubePlayerView: UIViewRepresentable {
+    let videoKey: String
+    
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.scrollView.isScrollEnabled = false
+        webView.isOpaque = false
+        webView.backgroundColor = .clear
+        return webView
+    }
+    
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        let embedHTML = """
+        <html><body style='margin:0;padding:0;'><iframe width='100%' height='560' src='https://www.youtube.com/embed/\(videoKey)?playsinline=1' frameborder='0' allow='autoplay; encrypted-media' allowfullscreen></iframe></body></html>
+        """
+        uiView.loadHTMLString(embedHTML, baseURL: nil)
     }
 } 
 

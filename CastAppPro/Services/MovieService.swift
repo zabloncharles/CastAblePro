@@ -109,4 +109,20 @@ class MovieService: ObservableObject {
             throw error
         }
     }
+    
+    func fetchMovieTrailer(movieId: Int) async throws -> String? {
+        guard let url = URL(string: "\(baseURL)/movie/\(movieId)/videos?api_key=\(apiKey)") else { return nil }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(VideoResponse.self, from: data)
+        return response.results.first(where: { $0.type == "Trailer" && $0.site == "YouTube" })?.key
+    }
+
+    private struct VideoResponse: Codable {
+        let results: [Video]
+    }
+    private struct Video: Codable {
+        let key: String
+        let type: String
+        let site: String
+    }
 } 
