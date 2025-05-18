@@ -14,12 +14,14 @@ struct CastAppProApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                ContentView()
+            ContentView()
                 if showSplash {
                     SplashScreen()
                         .transition(.opacity)
                         .zIndex(1)
                 }
+                
+              
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

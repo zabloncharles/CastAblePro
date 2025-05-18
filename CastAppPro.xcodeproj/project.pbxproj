@@ -17,6 +17,8 @@
 		F7A7B8CC2DD8140F00A2F349 /* SSDPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */; };
 		F7A7B8D02DD8140F00A2F349 /* RokuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8C42DD8140E00A2F349 /* RokuController.swift */; };
 		F7A7B8D32DD814BF00A2F349 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8D22DD814BF00A2F349 /* ContentView.swift */; };
+		F7A7B8D52DD9365900A2F349 /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8D42DD9365900A2F349 /* Movie.swift */; };
+		F7A7B8D82DD9368600A2F349 /* MovieService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A7B8D72DD9368600A2F349 /* MovieService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,9 @@
 		F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSDPService.swift; sourceTree = "<group>"; };
 		F7A7B8C42DD8140E00A2F349 /* RokuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RokuController.swift; sourceTree = "<group>"; };
 		F7A7B8D22DD814BF00A2F349 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F7A7B8D42DD9365900A2F349 /* Movie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
+		F7A7B8D72DD9368600A2F349 /* MovieService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieService.swift; sourceTree = "<group>"; };
+		F7A7B8D92DD966FD00A2F349 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +70,8 @@
 		F7778D5C2DD7B93A005BC985 /* CastAppPro */ = {
 			isa = PBXGroup;
 			children = (
+				F7A7B8D92DD966FD00A2F349 /* Info.plist */,
+				F7A7B8D62DD9368600A2F349 /* Services */,
 				F7A7B8B62DD8140E00A2F349 /* Assets.xcassets */,
 				F7A7B8C32DD8140E00A2F349 /* Controllers */,
 				F7A7B8BD2DD8140E00A2F349 /* Models */,
@@ -107,6 +114,7 @@
 		F7A7B8BD2DD8140E00A2F349 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F7A7B8D42DD9365900A2F349 /* Movie.swift */,
 				F7A7B8BE2DD8140E00A2F349 /* RokuDevice.swift */,
 				F7A7B8BF2DD8140E00A2F349 /* SSDPService.swift */,
 			);
@@ -119,6 +127,14 @@
 				F7A7B8C42DD8140E00A2F349 /* RokuController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		F7A7B8D62DD9368600A2F349 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F7A7B8D72DD9368600A2F349 /* MovieService.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,7 +209,9 @@
 			files = (
 				F7A7B8CB2DD8140F00A2F349 /* RokuDevice.swift in Sources */,
 				F7A7B8CC2DD8140F00A2F349 /* SSDPService.swift in Sources */,
+				F7A7B8D52DD9365900A2F349 /* Movie.swift in Sources */,
 				F7A7B8D32DD814BF00A2F349 /* ContentView.swift in Sources */,
+				F7A7B8D82DD9368600A2F349 /* MovieService.swift in Sources */,
 				F7A7B8C82DD8140F00A2F349 /* WebView.swift in Sources */,
 				F7A7B8D02DD8140F00A2F349 /* RokuController.swift in Sources */,
 				F7A7B8C92DD8140F00A2F349 /* CastModalView.swift in Sources */,
@@ -255,7 +273,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -309,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -327,9 +345,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CastAppPro/Preview Content\"";
-				DEVELOPMENT_TEAM = 25W7NUNB49;
+				DEVELOPMENT_TEAM = RB57AZ828B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CastAppPro/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to devices on your local network to discover and cast to Roku devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -356,9 +376,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CastAppPro/Preview Content\"";
-				DEVELOPMENT_TEAM = 25W7NUNB49;
+				DEVELOPMENT_TEAM = RB57AZ828B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CastAppPro/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to devices on your local network to discover and cast to Roku devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

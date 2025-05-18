@@ -36,7 +36,9 @@ struct CastModalView: View {
                         .foregroundColor(.red)
                     
                     Button(action: {
-                        rokuController.discoverDevices()
+                        Task {
+                            await rokuController.discoverDevices()
+                        }
                     }) {
                         Text("Search for Roku Devices")
                             .font(.headline)

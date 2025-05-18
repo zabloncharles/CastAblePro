@@ -15,8 +15,11 @@ class RokuController: ObservableObject {
     private let ssdpService = SSDPService()
     private var statusUpdateTimer: Timer?
     
+    private let lastDeviceKey = "lastConnectedRokuDevice"
+    
     init() {
         setupBindings()
+        autoReconnectLastDevice()
     }
     
     private func setupBindings() {
@@ -27,13 +30,51 @@ class RokuController: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func discoverDevices() {
+    func discoverDevices() async {
+        // Clear existing devices
+        await MainActor.run {
+            discoveredDevices.removeAll()
+        }
+        
+        // Start discovery
         ssdpService.startDiscovery()
+        
+        // Wait for a reasonable time to discover devices
+        try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+        
+        // Stop discovery
+        ssdpService.stopDiscovery()
     }
     
     func connect(to device: RokuDevice) {
         connectedDevice = device
         isConnected = true
+        saveLastConnectedDevice(device)
+    }
+    
+    func saveLastConnectedDevice(_ device: RokuDevice) {
+        let dict: [String: String] = ["ip": device.ipAddress, "name": device.name]
+        UserDefaults.standard.set(dict, forKey: lastDeviceKey)
+    }
+    
+    private func autoReconnectLastDevice() {
+        guard connectedDevice == nil else { return }
+        guard let dict = UserDefaults.standard.dictionary(forKey: lastDeviceKey) as? [String: String],
+              let ip = dict["ip"], let name = dict["name"] else { return }
+        let urlString = "http://\(ip):8060/query/device-info"
+        guard let url = URL(string: urlString) else { return }
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            guard error == nil, let data = data, let xml = String(data: data, encoding: .utf8), xml.contains("<device-info>") else { return }
+            DispatchQueue.main.async {
+                let device = RokuDevice(id: UUID().uuidString, name: name, ipAddress: ip)
+                self.connectedDevice = device
+                self.isConnected = true
+                if !self.discoveredDevices.contains(where: { $0.ipAddress == device.ipAddress }) {
+                    self.discoveredDevices.append(device)
+                }
+            }
+        }.resume()
     }
     
     func castVideo(url: String) {

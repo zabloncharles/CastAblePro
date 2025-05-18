@@ -1,6 +1,10 @@
 import SwiftUI
 import WebKit
 
+class NoAccessoryWKWebView: WKWebView {
+    override var inputAccessoryView: UIView? { nil }
+}
+
 class WebViewModel: ObservableObject {
     @Published var canGoBack = false
     @Published var canGoForward = false
@@ -10,14 +14,35 @@ class WebViewModel: ObservableObject {
     func goBack() {
         webView?.goBack()
     }
+    
     func goForward() {
         webView?.goForward()
     }
+    
     func reload() {
         webView?.reload()
     }
+    
     func load(url: URL) {
         webView?.load(URLRequest(url: url))
+    }
+    
+    func formatAndLoadURL(_ input: String) -> URL? {
+        var formattedString = input
+        
+        // If the input doesn't have a scheme, try to add https://
+        if !input.hasPrefix("http://") && !input.hasPrefix("https://") {
+            // Check if it's a search query (contains spaces or doesn't look like a domain)
+            if input.contains(" ") || !input.contains(".") {
+                // Format as a Google search
+                formattedString = "https://www.google.com/search?q=\(input.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? input)"
+            } else {
+                // Assume it's a domain and add https://
+                formattedString = "https://\(input)"
+            }
+        }
+        
+        return URL(string: formattedString)
     }
 }
 
@@ -40,7 +65,7 @@ struct WebView: UIViewRepresentable {
         userContentController.add(context.coordinator, name: "videoDetected")
         configuration.userContentController = userContentController
         
-        let webView = WKWebView(frame: .zero, configuration: configuration)
+        let webView = NoAccessoryWKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         viewModel.webView = webView
         return webView
