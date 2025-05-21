@@ -959,34 +959,49 @@ struct MovieDetailSheet: View {
                     Text("Details")
                         .font(.headline).bold()
                         .foregroundColor(Color("invert"))
-                    HStack(spacing: 18) {
-                        InfoCard(icon: "calendar", label: "Year", title: movie.year)
-                        InfoCard(icon: "clock", label: "Release Date", title: movie.releaseDate)
-                        InfoCard(icon: "number", label: "TMDB ID", title: String(movie.id))
-                        Spacer()
+                        .padding(.horizontal)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(alignment: .center, spacing: 18) {
+                            InfoCard(icon: "calendar", label: "Year", title: movie.year)
+                            Divider()
+                            InfoCard(icon: "clock", label: "Release Date", title: movie.releaseDate)
+                            Divider()
+                            InfoCard(icon: "number", label: "TMDB ID", title: String(movie.id))
+                           
+                        }.padding(.leading)
                     }
                 }
-                .padding(.horizontal)
+                
                 .padding(.bottom, 8)
                 // Storyline
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Storyline")
-                        .font(.headline).bold()
+                    HStack {
+                        Text("Storyline")
+                            .font(.headline).bold()
                         .foregroundColor(Color("invert"))
-                    Text(movie.overview)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                        .lineLimit(showFullStory ? nil : 2)
-                    if !showFullStory {
-                        Button(action: { showFullStory = true }) {
-                            Text("Read More")
-                                .font(.caption).bold()
-                                .foregroundColor(accentBlue)
-                        }
+                        Spacer()
+                      
+                        Button(action: { showFullStory.toggle() }) {
+                            Text(showFullStory ? "Read Less" : "Read More")
+                                    .font(.caption).bold()
+                                    .foregroundColor(accentBlue)
+                            }
+                        
                     }
+                    HStack(alignment: .top) {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.gray)
+                            .padding(.top,2)
+                        Text(movie.overview)
+                            .font(.body)
+                            .foregroundColor(.gray)
+                        .lineLimit(showFullStory ? nil : 5)
+                    }
+                    
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
+                .padding(.bottom, 8)
                 // Cast Carousel
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -1005,7 +1020,7 @@ struct MovieDetailSheet: View {
                         HStack(spacing: 18) {
                             ForEach(cast) { member in
                                 VStack(spacing: 6) {
-                                    Image(systemName: member.image)
+                                    Image(systemName: "person.crop.circle")
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 54, height: 54)
@@ -1033,8 +1048,18 @@ struct MovieDetailSheet: View {
             .background(Color("dynamic"))
         }.toolbarBackground(Color("dynamic"))
             .navigationBarTitle(movie.title)
-           
-        
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        let entry = WatchlistMovie(id: movie.id, title: movie.title, description: movie.overview)
+                        watchlistManager.toggle(entry)
+                    }) {
+                        Image(systemName: isInWatchlist ? "bookmark.fill" : "bookmark")
+                            .foregroundColor(isInWatchlist ? .accentColor : .blue)
+                            .font(.title3)
+                    }
+                }
+            }
     }
 }
 
@@ -1055,18 +1080,27 @@ struct InfoCard: View {
        
             HStack(alignment: .center, spacing: 4) {
                 Image(systemName: icon)
-                    .foregroundColor(Color.purple)
+                    .foregroundColor(Color.gray)
                     .font(.title)
-                VStack(alignment: .leading) {
+               
                     Text(label)
                         .font(.subheadline).bold()
-                    .foregroundColor(Color("dynamic"))
+                        .foregroundColor(Color("invert").opacity(0.87))
                     Text(title)
                         .font(.caption)
                         .foregroundColor(.gray)
-                }
+                
             }
         .padding(.horizontal,10)
+        .foregroundColor(Color("dynamic"))
+        .frame(maxWidth: .infinity)
+        .padding(8)
+        .background(Color("dynamic"))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+        )
         
         
     }
