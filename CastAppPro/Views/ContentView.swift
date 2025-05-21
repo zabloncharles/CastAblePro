@@ -12,7 +12,7 @@ struct StartPageView: View {
     @FocusState private var searchFocused: Bool
     let userName = "Zablon"
     let accentBlue = Color(red: 0.18, green: 0.38, blue: 0.95)
-    let bgColor = Color(.white)
+    let bgColor = Color("dynamic")
     @ObservedObject var watchlistManager: WatchlistManager
     
     var body: some View {
@@ -26,10 +26,10 @@ struct StartPageView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Good morning, \(userName)")
                                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(Color("invert"))
                                 Text("Ready to stream?")
                                     .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gray)
                             }
                             Spacer()
                             ZStack(alignment: .topTrailing) {
@@ -38,14 +38,14 @@ struct StartPageView: View {
                                         .font(.system(size: 22, weight: .bold))
                                         .foregroundColor(accentBlue)
                                         .padding(8)
-                                        .background(Color.white)
+                                        .background(Color("dynamic"))
                                         .clipShape(Circle())
-                                        .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
+                                        .shadow(color: Color("invert").opacity(0.06), radius: 4, x: 0, y: 2)
                                 }
                                 Circle()
                                     .fill(Color.red)
                                     .frame(width: 16, height: 16)
-                                    .overlay(Text("3").font(.caption2).foregroundColor(.white))
+                                    .overlay(Text("3").font(.caption2).foregroundColor(Color("dynamic")))
                                     .offset(x: 8, y: -8)
                             }
                         }
@@ -57,7 +57,7 @@ struct StartPageView: View {
                                 .foregroundColor(.gray)
                             TextField("Search...", text: $searchText)
                                 .focused($searchFocused)
-                                .foregroundColor(.primary)
+                                .foregroundColor(Color("invert"))
                                 .onChange(of: searchText) { newValue in
                                     Task { await movieService.searchMovies(query: newValue) }
                                 }
@@ -70,9 +70,9 @@ struct StartPageView: View {
                         }
                         .padding(.vertical, 12)
                         .padding(.horizontal, 18)
-                        .background(Color.white)
+                        .background(Color("dynamic"))
                         .cornerRadius(18)
-                        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+                        .shadow(color: Color("invert").opacity(0.06), radius: 8, x: 0, y: 2)
                         .padding(.horizontal)
                         .padding(.top, 16)
                         // Quick Actions
@@ -100,11 +100,14 @@ struct StartPageView: View {
                         
                         // Continue Watching
                         if let movie = movieService.popularMovies.first {
-                            Text("Continue Watching")
-                                .font(.title3).bold()
-                                .foregroundColor(.primary)
-                                .padding(.horizontal)
-                                .padding(.top, 12)
+                            HStack {
+                                Text("Continue Watching")
+                                    .font(.title3).bold()
+                                    .foregroundColor(Color("invert"))
+                                    .padding(.horizontal)
+                                .padding(.top, 25)
+                                Spacer()
+                            }
                             ContinueWatchingCard(movie: movie, accentBlue: accentBlue, watchlistManager: watchlistManager)
                                 .padding(.horizontal)
                                 .padding(.bottom, 8)
@@ -137,7 +140,7 @@ struct SectionHeader: View {
         HStack {
             Text(title)
                 .font(.title3).bold()
-                .foregroundColor(.primary)
+                .foregroundColor(Color("invert"))
             Spacer()
             Button(action: {}) {
                 Text("See All")
@@ -250,11 +253,11 @@ struct BookStyleMovieCard: View {
             }
             Text(movie.title)
                 .font(.subheadline).bold()
-                .foregroundColor(.primary)
+                .foregroundColor(Color("invert"))
                 .lineLimit(1)
             Text("\(movie.year)")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.gray)
                 .lineLimit(1)
         }
         .frame(width: 130)
@@ -282,11 +285,11 @@ struct ContinueWatchingCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(movie.title)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color("invert"))
                         .lineLimit(1)
                     Text(movie.overview)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                         .multilineTextAlignment(.leading)
                         .lineLimit(5)
                     ProgressView(value: 0.7)
@@ -295,7 +298,7 @@ struct ContinueWatchingCard: View {
                     Button(action: { }) {
                         Text("Continue watching")
                             .font(.subheadline).bold()
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("dynamic"))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 6)
                             .background(accentBlue)
@@ -315,9 +318,9 @@ struct ContinueWatchingCard: View {
                 .buttonStyle(PlainButtonStyle())
             }
             .padding(16)
-            .background(Color.white)
+            .background(Color("dynamic"))
             .cornerRadius(15)
-            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
+            .shadow(color: Color("invert").opacity(0.06), radius: 8, x: 0, y: 2)
             .padding(.top,10)
         }
     }
@@ -337,14 +340,14 @@ struct HuluHeroBanner: View {
                 }
                 .clipped()
                 .overlay(
-                    LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.0), Color.black.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
+                    LinearGradient(gradient: Gradient(colors: [Color("invert").opacity(0.0), Color("invert").opacity(0.8)]), startPoint: .top, endPoint: .bottom)
                 )
             }
             VStack(alignment: .leading, spacing: 14) {
                 if let movie = movie {
                     Text(movie.title)
                         .font(.system(size: 30, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color("invert"))
                         .shadow(radius: 8)
                     HStack(spacing: 10) {
                         InfoChip(text: movie.year, color: huluGreen)
@@ -354,13 +357,13 @@ struct HuluHeroBanner: View {
                     .padding(.bottom, 2)
                     Text(movie.overview)
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(Color("dynamic").opacity(0.8))
                         .lineLimit(2)
                         .shadow(radius: 4)
                     Button(action: {}) {
                         Text("Watch Now")
                             .font(.headline)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color("invert"))
                             .padding(.horizontal, 32)
                             .padding(.vertical, 12)
                             .background(huluGreen)
@@ -373,7 +376,7 @@ struct HuluHeroBanner: View {
             .padding(32)
         }
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: Color.black.opacity(0.18), radius: 24, x: 0, y: 12)
+        .shadow(color: Color("invert").opacity(0.18), radius: 24, x: 0, y: 12)
         .padding(.horizontal, 12)
     }
 }
@@ -386,7 +389,7 @@ struct HuluSectionHeader: View {
         HStack {
             Text(title)
                 .font(.title3).bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color("dynamic"))
             Spacer()
             Button(action: {}) {
                 Text("See All")
@@ -444,14 +447,14 @@ struct HuluMovieCard: View {
                             .foregroundColor(huluGreen)
                             .font(.caption2)
                         Text(String(format: "%.1f", movie.voteAverage))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("dynamic"))
                             .font(.caption2)
                     }
                     .padding(8)
                 }
                 Text(movie.title)
                     .font(.subheadline)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("invert"))
                     .lineLimit(1)
             }
         }
@@ -461,11 +464,11 @@ struct HuluMovieCard: View {
 // MARK: - Info Chip (Hulu Style)
 struct InfoChip: View {
     var text: String
-    var color: Color = Color.white.opacity(0.18)
+    var color: Color = Color("dynamic").opacity(0.18)
     var body: some View {
         Text(text)
             .font(.caption)
-            .foregroundColor(.white)
+            .foregroundColor(Color("dynamic"))
             .padding(.horizontal, 12)
             .padding(.vertical, 4)
             .background(color)
@@ -486,19 +489,19 @@ struct HuluBottomNavBar: View {
             Button(action: {}) {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
             }
             Button(action: {}) {
                 Image(systemName: "person.crop.circle")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
             }
         }
         .padding(.vertical, 18)
         .padding(.horizontal, 36)
         .background(
             Capsule()
-                .fill(Color.white.opacity(0.08))
+                .fill(Color("dynamic").opacity(0.08))
         )
         .overlay(
             Capsule().stroke(huluGreen.opacity(0.18), lineWidth: 1)
@@ -521,14 +524,14 @@ struct HeroSectionView: View {
                 }
                 .clipped()
                 .overlay(
-                    LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.0), Color.black.opacity(0.7)]), startPoint: .top, endPoint: .bottom)
+                    LinearGradient(gradient: Gradient(colors: [Color("invert").opacity(0.0), Color("invert").opacity(0.7)]), startPoint: .top, endPoint: .bottom)
                 )
             }
             VStack(alignment: .leading, spacing: 14) {
                 if let movie = movie {
                     Text(movie.title)
                         .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color("invert"))
                         .shadow(radius: 8)
                     HStack(spacing: 10) {
                         InfoChip(text: movie.year)
@@ -538,13 +541,13 @@ struct HeroSectionView: View {
                     .padding(.bottom, 2)
                     Text(movie.overview)
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(Color("dynamic").opacity(0.8))
                         .lineLimit(3)
                         .shadow(radius: 4)
                     Button(action: {}) {
                         Text("Watch Now")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("dynamic"))
                             .padding(.horizontal, 32)
                             .padding(.vertical, 12)
                             .background(BlurView(style: .systemUltraThinMaterialDark))
@@ -557,7 +560,7 @@ struct HeroSectionView: View {
             .padding(32)
         }
         .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-        .shadow(color: Color.black.opacity(0.18), radius: 24, x: 0, y: 12)
+        .shadow(color: Color("invert").opacity(0.18), radius: 24, x: 0, y: 12)
         .padding(.horizontal, 12)
     }
 }
@@ -569,7 +572,7 @@ struct ContinueWatchingRow: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Continue Watching")
                 .font(.title3).bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color("invert"))
                 .padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 18) {
@@ -597,7 +600,7 @@ struct ContinueWatchingRow: View {
                             }
                             Text(movie.title)
                                 .font(.caption)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color("invert"))
                                 .lineLimit(1)
                         }
                     }
@@ -615,7 +618,7 @@ struct ForYouCarousel: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("For You")
                 .font(.title3).bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color("dynamic"))
                 .padding(.horizontal)
             TabView(selection: .constant(0)) {
                 ForEach(Array(movies.enumerated()), id: \ .offset) { idx, movie in
@@ -634,11 +637,11 @@ struct ForYouCarousel: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(movie.title)
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("invert"))
                                     .shadow(radius: 4)
                                 Button(action: {}) {
                                     Image(systemName: "plus")
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("invert"))
                                         .padding(8)
                                         .background(Color.blue.opacity(0.7))
                                         .clipShape(Circle())
@@ -673,17 +676,17 @@ struct BottomNavBar: View {
             Button(action: {}) {
                 Image(systemName: "house.fill")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
             }
             Button(action: {}) {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
             }
             Button(action: {}) {
                 Image(systemName: "person.crop.circle")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
             }
         }
         .padding(.vertical, 18)
@@ -693,9 +696,9 @@ struct BottomNavBar: View {
                 .clipShape(Capsule())
         )
         .overlay(
-            Capsule().stroke(Color.white.opacity(0.10), lineWidth: 1)
+            Capsule().stroke(Color("dynamic").opacity(0.10), lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.18), radius: 18, x: 0, y: 8)
+        .shadow(color: Color("invert").opacity(0.18), radius: 18, x: 0, y: 8)
         .padding(.bottom, 18)
     }
 }
@@ -714,7 +717,7 @@ struct AnimatedPlayButton: View {
                 .fill(Color.pink)
                 .frame(width: 70, height: 70)
             Image(systemName: "play.fill")
-                .foregroundColor(.white)
+                .foregroundColor(Color("dynamic"))
                 .font(.system(size: 32, weight: .bold))
         }
         .onAppear { animate = true }
@@ -737,23 +740,23 @@ struct FeaturedMovieCard: View {
                 }
                 .frame(height: 220)
                 .clipped()
-                .cornerRadius(20)
+                .cornerRadius(15)
             }
             
-            LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.01), Color.black.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color("invert").opacity(0.01), Color("invert").opacity(0.8)]), startPoint: .top, endPoint: .bottom)
                 .cornerRadius(20)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(movie.title)
                     .font(.title2).bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("invert"))
                 HStack(spacing: 8) {
                     HStack(spacing: 2) {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
                             .font(.caption)
                         Text(String(format: "%.1f", movie.voteAverage))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("invert"))
                             .font(.subheadline)
                     }
                     Text("Released: \(movie.year)")
@@ -762,7 +765,7 @@ struct FeaturedMovieCard: View {
                     Button(action: {}) {
                         Text("Watch")
                             .font(.subheadline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("invert"))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 6)
                             .background(Color.blue)
@@ -801,7 +804,7 @@ struct MovieThumbCard: View {
                                 .foregroundColor(.yellow)
                                 .font(.caption2)
                             Text(String(format: "%.1f", movie.voteAverage))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color("dynamic"))
                                 .font(.caption2)
                         }
                     }
@@ -809,7 +812,7 @@ struct MovieThumbCard: View {
                 }
                 Text(movie.title)
                     .font(.subheadline)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("invert"))
                     .lineLimit(1)
             }
         }
@@ -852,7 +855,7 @@ struct MovieDetailSheet: View {
                         .frame(height: 220)
                         .clipped()
                         .overlay(
-                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.55),Color.white]), startPoint: .top, endPoint: .bottom)
+                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color("dynamic").opacity(0.55),Color("dynamic")]), startPoint: .top, endPoint: .bottom)
                         )
                     }
                  
@@ -867,17 +870,17 @@ struct MovieDetailSheet: View {
                             Color.gray
                         }
                         .frame(width: 80, height: 110)
-                        .cornerRadius(12)
+                        .cornerRadius(10)
                         .shadow(color: accentBlue.opacity(0.10), radius: 8, x: 0, y: 4)
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text(movie.title)
                             .font(.headline).bold()
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color("invert"))
                             .lineLimit(2)
                         Text("2h 1min | Crime, Drama")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.gray)
                         HStack(spacing: 6) {
                             ForEach(0..<5) { i in
                                 Image(systemName: i < Int(movie.voteAverage/2) ? "star.fill" : "star")
@@ -886,21 +889,10 @@ struct MovieDetailSheet: View {
                             }
                             Text(String(format: "%.1f", movie.voteAverage))
                                 .font(.caption).bold()
-                                .foregroundColor(.primary)
+                                .foregroundColor(Color("invert"))
                         }
-                        Button(action: { isFavorite.toggle() }) {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .foregroundColor(isFavorite ? accentRed : .gray)
-                                .font(.title2)
-                        }
-                        Button(action: {
-                            let entry = WatchlistMovie(id: movie.id, title: movie.title, description: movie.overview)
-                            watchlistManager.toggle(entry)
-                        }) {
-                            Image(systemName: isInWatchlist ? "bookmark.fill" : "bookmark")
-                                .foregroundColor(isInWatchlist ? .accentColor : .gray)
-                                .font(.title2)
-                        }
+                       
+                      
                         // Watch Trailer Button
                         Button(action: {
                             Task {
@@ -925,7 +917,7 @@ struct MovieDetailSheet: View {
                                 Text("Watch Trailer")
                                     .font(.headline)
                             }
-                            .foregroundColor(.white)
+                            .foregroundColor(Color("dynamic"))
                             .frame(maxWidth: .infinity)
                             .padding(8)
                             .background(accentBlue)
@@ -953,7 +945,7 @@ struct MovieDetailSheet: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Trailer")
                             .font(.headline).bold()
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color("invert"))
                         YouTubePlayerView(videoKey: videoKey)
                             .frame(height: 220)
                             .cornerRadius(12)
@@ -966,7 +958,7 @@ struct MovieDetailSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Details")
                         .font(.headline).bold()
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color("invert"))
                     HStack(spacing: 18) {
                         InfoCard(icon: "calendar", label: "Year", title: movie.year)
                         InfoCard(icon: "clock", label: "Release Date", title: movie.releaseDate)
@@ -980,10 +972,10 @@ struct MovieDetailSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Storyline")
                         .font(.headline).bold()
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color("invert"))
                     Text(movie.overview)
                         .font(.body)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                         .lineLimit(showFullStory ? nil : 2)
                     if !showFullStory {
                         Button(action: { showFullStory = true }) {
@@ -1000,7 +992,7 @@ struct MovieDetailSheet: View {
                     HStack {
                         Text("Cast")
                             .font(.headline).bold()
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color("invert"))
                         Spacer()
                         Button(action: {}) {
                             Text("See all")
@@ -1021,11 +1013,11 @@ struct MovieDetailSheet: View {
                                         .background(Circle().fill(Color(.systemGray6)))
                                     Text(member.name)
                                         .font(.caption).bold()
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(Color("invert"))
                                         .lineLimit(1)
                                     Text(member.role)
                                         .font(.caption2)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.gray)
                                         .lineLimit(1)
                                 }
                                 .frame(width: 70)
@@ -1041,6 +1033,7 @@ struct MovieDetailSheet: View {
             .background(Color("dynamic"))
         }.toolbarBackground(Color("dynamic"))
             .navigationBarTitle(movie.title)
+           
         
     }
 }
@@ -1067,10 +1060,10 @@ struct InfoCard: View {
                 VStack(alignment: .leading) {
                     Text(label)
                         .font(.subheadline).bold()
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color("dynamic"))
                     Text(title)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                 }
             }
         .padding(.horizontal,10)
@@ -1086,7 +1079,7 @@ struct CarouselSection: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.title2).bold()
-                .foregroundColor(.white)
+                .foregroundColor(Color("dynamic"))
                 .padding(.horizontal)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
@@ -1097,7 +1090,7 @@ struct CarouselSection: View {
                             .frame(width: 120, height: 170)
                             .clipped()
                             .cornerRadius(16)
-                            .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .shadow(color: Color("invert").opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                 }
                 .padding(.horizontal)
@@ -1127,7 +1120,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            (darkMode ? Color.black : Color.white).ignoresSafeArea(edges: .top)
+           Color("dynamic").ignoresSafeArea(edges: .top)
             Group {
                 if selectedTab == 0 {
                     StartPageView(watchlistManager: watchlistManager)
@@ -1192,14 +1185,12 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            (darkMode ? Color.black : Color(.systemGroupedBackground)).ignoresSafeArea()
+            Color("dynamic").ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 0) {
                     // Profile Card
                     ZStack {
-                        (darkMode ? Color.black : Color.white)
-                            .cornerRadius(24)
-                            .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                      
                         VStack(spacing: 8) {
                             ZStack {
                                 Circle()
@@ -1213,13 +1204,13 @@ struct SettingsView: View {
                             }
                             Text(userName)
                                 .font(.title).bold()
-                                .foregroundColor(darkMode ? .white : .primary)
+                                .foregroundColor(Color("invert"))
                             Text("You rock!")
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                             Text("You've finished last movie in 3 days 🔥")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                         }
                         .padding(.top, 32)
                         .padding(.bottom, 18)
@@ -1230,16 +1221,14 @@ struct SettingsView: View {
                     .zIndex(2)
                     // Settings Form Card
                     ZStack {
-                        (darkMode ? Color.black : Color.white)
-                            .cornerRadius(24)
-                            .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 4)
+                   
                         VStack(spacing: 0) {
                             // Use a VStack to mimic Form sections
                             Group {
                                 // Appearance
                                 HStack {
                                     Text("Dark Mode")
-                                        .foregroundColor(darkMode ? .white : .primary)
+                                        .foregroundColor(Color("invert"))
                                     Spacer()
                                     Toggle("", isOn: $darkMode)
                                         .labelsHidden()
@@ -1249,10 +1238,10 @@ struct SettingsView: View {
                                 // Browser
                                 VStack(alignment: .leading, spacing: 0) {
                                     TextField("Default Home Page", text: $homePage)
-                                        .foregroundColor(darkMode ? .white : .primary)
+                                        .foregroundColor(Color.gray)
                                         .padding(.vertical, 8)
                                     Toggle("Auto-Detect Videos", isOn: $autoDetectVideos)
-                                        .foregroundColor(darkMode ? .white : .primary)
+                                        .foregroundColor(Color("invert"))
                                         .padding(.vertical, 8)
                                     Button(role: .destructive) {
                                         showClearAlert = true
@@ -1275,7 +1264,7 @@ struct SettingsView: View {
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text("Connected Device")
-                                                    .foregroundColor(darkMode ? .white : .primary)
+                                                    .foregroundColor(Color("invert"))
                                                 if let device = connectedDevice {
                                                     Text(device.name)
                                                         .font(.subheadline)
@@ -1283,7 +1272,7 @@ struct SettingsView: View {
                                                 } else {
                                                     Text("No device connected")
                                                         .font(.subheadline)
-                                                        .foregroundColor(.secondary)
+                                                        .foregroundColor(.gray)
                                                 }
                                             }
                                             Spacer()
@@ -1296,13 +1285,13 @@ struct SettingsView: View {
                                 .padding(.horizontal)
                                 Divider()
                                 // About
-                                VStack(alignment: .leading, spacing: 0) {
+                                VStack(alignment: .leading, spacing: 10) {
                                     HStack {
                                         Text("Version")
-                                            .foregroundColor(darkMode ? .white : .primary)
+                                            .foregroundColor(Color("invert"))
                                         Spacer()
                                         Text(appVersion)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.gray)
                                     }
                                     Link(destination: feedbackURL) {
                                         Label("Send Feedback", systemImage: "envelope")
@@ -1342,8 +1331,8 @@ struct SettingsView: View {
                     Spacer()
                 }
             }
-            .toolbarBackground(darkMode ? Color.black : Color(.systemGroupedBackground), for: .navigationBar)
-            .toolbarBackground(darkMode ? Color.black : Color(.systemGroupedBackground), for: .automatic)
+            .toolbarBackground(Color("dynamic"), for: .navigationBar)
+            .toolbarBackground(Color("dynamic"), for: .automatic)
             .navigationTitle("Settings")
             .sheet(isPresented: $showCastDevices) {
                 CastDevicesView(rokuController: rokuController)
@@ -1378,7 +1367,7 @@ struct QuickActionButton: View {
             }
             Text(label)
                 .font(.caption)
-                .foregroundColor(.primary)
+                .foregroundColor(Color("invert"))
         }
     }
 }
@@ -1391,17 +1380,17 @@ struct PromoCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Get 1 Month Free Premium")
                     .font(.headline).bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color("dynamic"))
                 Text("Unlock all features and stream unlimited movies.")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.9))
+                    .foregroundColor(Color("dynamic").opacity(0.9))
                 Button(action: {}) {
                     Text("Claim Now")
                         .font(.subheadline).bold()
                         .foregroundColor(accentBlue)
                         .padding(.horizontal, 18)
                         .padding(.vertical, 8)
-                        .background(Color.white)
+                        .background(Color("dynamic"))
                         .cornerRadius(8)
                 }
                 .padding(.top, 4)
@@ -1411,7 +1400,7 @@ struct PromoCard: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 54, height: 54)
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(Color("dynamic").opacity(0.8))
                 .padding(.trailing, 8)
         }
         .padding(18)
@@ -1499,7 +1488,7 @@ struct CustomTabBar: View {
         )
         .overlay(
             Rectangle()
-                .fill(Color.black.opacity(0.08))
+                .fill(Color("invert").opacity(0.08))
                 .frame(height: 0.5)
                 .offset(y: -0.5), alignment: .top
         )
@@ -1538,7 +1527,7 @@ struct CastDevicesView: View {
                                     .font(.headline)
                                 Text(connectedDevice.ipAddress)
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gray)
                             }
                             Spacer()
                             Button(action: {
@@ -1568,7 +1557,7 @@ struct CastDevicesView: View {
                                         }
                                     }
                                 Text("Searching for devices...")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.gray)
                             }
                             .padding()
                             Spacer()
@@ -1581,10 +1570,10 @@ struct CastDevicesView: View {
                                 .foregroundColor(.gray)
                             Text("No devices found")
                                 .font(.headline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                             Text("Make sure your Roku device is turned on and connected to the same network")
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
                             Button(action: {
@@ -1603,7 +1592,7 @@ struct CastDevicesView: View {
                                     Text("Search for Devices")
                                 }
                                 .font(.headline)
-                                .foregroundColor(.white)
+                                .foregroundColor(Color("dynamic"))
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
                                 .background(Color.blue)
@@ -1641,10 +1630,10 @@ struct CastDevicesView: View {
                                     VStack(alignment: .leading) {
                                         Text(device.name)
                                             .font(.headline)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(Color("dynamic"))
                                         Text(device.ipAddress)
                                             .font(.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.gray)
                                     }
                                     Spacer()
                                     if rokuController.connectedDevice?.id == device.id {
@@ -1729,7 +1718,7 @@ struct CastDevicesView: View {
                             } else {
                                 Text("Connect")
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color("dynamic"))
                                     .padding(.horizontal, 32)
                                     .padding(.vertical, 12)
                                     .background(Color.blue)
@@ -1811,7 +1800,7 @@ struct BrowserTabView: View {
 
     var body: some View {
         ZStack {
-            (darkMode ? Color.black : Color.white).ignoresSafeArea(edges: .top)
+            (darkMode ? Color("invert") : Color("dynamic")).ignoresSafeArea(edges: .top)
             WebView(
                 url: $url,
                 showCastModal: $showCastModal,
@@ -1829,7 +1818,7 @@ struct BrowserTabView: View {
             }
             // Cast Modal
             if showCastModal {
-                Color.black.opacity(0.4)
+                Color("invert").opacity(0.4)
                     .edgesIgnoringSafeArea(.all)
                     .onTapGesture {
                         showCastModal = false
@@ -1903,7 +1892,7 @@ struct BrowserTabView: View {
                 }) {
                     Text("Go")
                         .fontWeight(.semibold)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color("dynamic"))
                         .padding(.vertical, 8)
                         .padding(.horizontal, 20)
                         .background(Color.blue)
@@ -1929,8 +1918,8 @@ struct BrowserTabView: View {
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(darkMode ? Color.black : Color(.white))
-                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
+                .fill(Color("dynamic"))
+                .shadow(color: Color("invert").opacity(0.08), radius: 8, x: 0, y: 2)
         )
         .padding(.horizontal, 12)
         .padding(.bottom,5)
@@ -1950,10 +1939,10 @@ struct WatchlistView: View {
                         .foregroundColor(.accentColor)
                     Text("Your Watchlist is Empty")
                         .font(.title2).bold()
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color("dynamic"))
                     Text("Add movies to your watchlist to see them here.")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.gray)
                 }
             } else {
                 ScrollView {
@@ -1967,10 +1956,10 @@ struct WatchlistView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(movie.title)
                                         .font(.headline)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(Color("invert"))
                                     Text(movie.description)
                                         .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.gray)
                                 }
                                 Spacer()
                                 Button(action: {
@@ -1983,9 +1972,9 @@ struct WatchlistView: View {
                                 .buttonStyle(PlainButtonStyle())
                             }
                             .padding()
-                            .background(Color.white)
+                            .background(Color("dynamic"))
                             .cornerRadius(12)
-                            .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
+                            .shadow(color: Color("invert").opacity(0.06), radius: 4, x: 0, y: 2)
                             .padding(.horizontal)
                         }
                     }
